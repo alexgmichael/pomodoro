@@ -10,14 +10,30 @@
 <body>
     <div class="container">
         <div class="timer-container">
+            <button id="settingsBtn" class="settings-btn">⚙️</button>
             <h1 id="mode-display">Work Time</h1>
             <div class="timer" id="timer">25:00</div>
             <div class="controls">
                 <button id="start-btn" class="btn">Start</button>
                 <button id="reset-btn" class="btn">Reset</button>
-                <button id="mode-toggle" class="btn">Switch to Rest</button>
+                <button id="toggleButton" class="toggle-button">Switch to Break</button>
             </div>
             <div id="quote" class="quote"></div>
+        </div>
+    </div>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>Timer Settings</h2>
+            <div class="settings-input">
+                <label for="workTime">Work Time (minutes):</label>
+                <input type="number" id="workTime" min="1" max="60">
+            </div>
+            <div class="settings-input">
+                <label for="breakTime">Break Time (minutes):</label>
+                <input type="number" id="breakTime" min="1" max="30">
+            </div>
+            <button id="saveSettings">Save</button>
+            <button id="closeSettings">Cancel</button>
         </div>
     </div>
     <script src="script.js"></script>
