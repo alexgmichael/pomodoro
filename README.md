@@ -1,6 +1,6 @@
 # Pomodoro Timer
 
-This is a simple Pomodoro Timer built with React and TypeScript. It allows you to set a timer for 25 minutes and track your progress.
+This is a simple Pomodoro Timer built with HTML, CSS, and JavaScript. It allows you to set a timer for 25 minutes and track your progress.
 
 ## Features:
 - Start and pause the timer
