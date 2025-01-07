@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.getElementById('timer');
     const modeDisplay = document.getElementById('mode-display');
     const quoteElement = document.getElementById('quote');
+    const addTimeBtn = document.getElementById('add-time-btn');
+    const taskInput = document.getElementById('taskInput');
+    let currentTask = '';
 
     // Initialize timer variables
     let workTime = 25 * 60;
@@ -107,11 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleButton.addEventListener('click', () => {
         isWorkTime = !isWorkTime;
         timeLeft = isWorkTime ? workTime : breakTime;
-        modeDisplay.textContent = isWorkTime ? 'Work Time' : 'Break Time';
-        toggleButton.textContent = isWorkTime ? 'Switch to Break' : 'Switch to Work';
+        updateMode();
+        updateDisplay();
         
         updateQuoteOnModeSwitch();
-        updateDisplay();
         
         if (isRunning) {
             clearInterval(timerInterval);
@@ -122,8 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start button event listener
     startButton.addEventListener('click', () => {
         if (!isRunning) {
+            // If input is visible, get value from there, otherwise use existing currentTask
+            if (taskInput.parentElement.style.display !== 'none') {
+                currentTask = taskInput.value.trim();
+                if (currentTask) {
+                    convertInputToLabel();
+                } else {
+                    alert('Please enter what you\'re working on');
+                    return;
+                }
+            }
+            
             isRunning = true;
             startButton.textContent = 'Pause';
+            addTimeBtn.style.display = 'block';
             startTimer();
         } else {
             isRunning = false;
@@ -138,6 +152,18 @@ document.addEventListener('DOMContentLoaded', () => {
         isRunning = false;
         timeLeft = isWorkTime ? workTime : breakTime;
         startButton.textContent = 'Start';
+        addTimeBtn.style.display = 'none';
+        
+        // Remove task label if it exists and show input
+        const taskLabel = document.querySelector('.task-label');
+        if (taskLabel) {
+            taskLabel.remove();
+        }
+        const taskInputContainer = taskInput.parentElement;
+        taskInputContainer.style.display = 'block';
+        currentTask = '';
+        taskInput.value = '';
+        
         updateTimer();
     });
 
@@ -182,6 +208,56 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateDisplay() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerDisplay.textContent = timeString;
+        updateTitle();
     }
+
+    function updateMode() {
+        if (isWorkTime) {
+            modeDisplay.textContent = '☀️';  // Work mode: sun
+        } else {
+            modeDisplay.textContent = '🌙';  // Break mode: moon
+        }
+    }
+
+    function updateTitle() {
+        const timeString = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+        const taskString = currentTask ? ` - ${currentTask}` : '';
+        document.title = `${timeString}${taskString} - Pomodoro Timer`;
+    }
+
+    function addFiveMinutes() {
+        timeLeft += 5 * 60;
+        updateDisplay();
+    }
+
+    // Add new add time button listener
+    addTimeBtn.addEventListener('click', () => {
+        if (isRunning) {
+            addFiveMinutes();
+        }
+    });
+
+    function convertInputToLabel() {
+        const taskInputContainer = taskInput.parentElement;
+        const label = document.createElement('div');
+        label.className = 'task-label';
+        label.textContent = currentTask;
+        taskInputContainer.style.display = 'none';
+        taskInputContainer.parentElement.insertBefore(label, taskInputContainer);
+    }
+
+    // Add this function to handle the enter key conversion
+    function handleEnterKey(event) {
+        if (event.key === 'Enter') {
+            currentTask = taskInput.value.trim();
+            if (currentTask) {
+                convertInputToLabel();
+            }
+        }
+    }
+
+    // Add this event listener after other element selections
+    taskInput.addEventListener('keypress', handleEnterKey);
 });
